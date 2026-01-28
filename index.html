@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="超巿格價計算機">
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <link rel="apple-touch-icon" href="smartcalc.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff4d6d">
+    
+    <title>Price Calculator - 超巿格價計算機</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto-Sans+TC:wght@700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "sweet-pink": "#ff8fa3",
+                        "sweet-pink-dark": "#ff4d6d",
+                        "ui-dark": "#334155",
+                        "item-bg": "#ffffff"
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .material-symbols-rounded { font-variation-settings: "FILL" 1, "wght" 700, "GRAD" 0, "opsz" 24 }
+        
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background-color: #fffaf0; 
+            overflow: hidden; 
+            height: 100vh;
+            height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+
+        html { height: -webkit-fill-available; }
+
+        @keyframes border-glow {
+            0%, 100% { border-color: #ffccd5; box-shadow: 0 10px 25px rgba(255, 143, 163, 0.2); transform: scale(1); }
+            50% { border-color: #ff4d6d; box-shadow: 0 15px 35px rgba(255, 77, 109, 0.4); transform: scale(1.03); }
+        }
+
+        .capsule-container {
+            display: flex; align-items: center; background: white; border: 3px solid #ffccd5;
+            border-radius: 32px; padding: 8px 16px; box-shadow: 0 12px 30px rgba(255, 77, 109, 0.15); transition: all 0.3s ease;
+        }
+
+        #item-list:empty + footer .capsule-container,
+        #item-list:has(.intro-mode) + footer .capsule-container { animation: border-glow 1.5s infinite ease-in-out; }
+        
+        .guide-highlight { animation: border-glow 1.5s infinite !important; }
+
+        .capsule-section { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .floating-label { font-size: 0.95rem; font-weight: 600; color: #291485; text-transform: uppercase; margin-bottom: 0px; letter-spacing: 0.5px; }
+        .clean-input { width: 100%; border: none !important; background: transparent !important; padding: 2px 0 !important; font-size: 1.25rem !important; font-weight: 900 !important; text-align: center; outline: none !important; box-shadow: none !important; color: #1e293b; }
+
+        #input-u { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff8fa3'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right -4px center; background-size: 20px; padding-right: 12px !important; }
+
+        .winner-glow { border: 4px solid #ff4d6d !important; background-color: #fff0f3 !important; box-shadow: 0 10px 20px rgba(255, 77, 109, 0.2); animation: bounce 0.5s ease infinite alternate; }
+
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+        @keyframes floating { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+
+        #scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1rem; scroll-behavior: smooth; }
+
+        footer {
+            padding: 1.5rem;
+            padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
+            background: linear-gradient(to top, #fffaf0 80%, rgba(255,250,240,0)); 
+            shrink-0: 0;
+            z-index: 20;
+        }
+
+        .helper-bubble {
+            position: relative; background: #ff4d6d; color: white; border-radius: 20px; padding: 10px 18px;
+            font-weight: 700; display: inline-block; box-shadow: 0 8px 20px rgba(255, 77, 109, 0.3);
+            animation: floating 2s ease-in-out infinite; font-size: 0.9rem;
+        }
+        .helper-bubble::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); border-width: 8px 8px 0; border-style: solid; border-color: #ff4d6d transparent transparent; }
+
+        #guide-zone.hide { display: none; }
+        .floating-btn { box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        
+        .example-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 16px;
+            padding: 6px 20px;
+            background-color: white;
+            color: #ff4d6d;
+            border: 2px solid #ffccd5;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(255, 77, 109, 0.1);
+        }
+        .example-link:active { transform: scale(0.95); background-color: #fff0f3; }
+
+        /* 圖片彈出層樣式 */
+        #image-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center;
+            z-index: 100; backdrop-filter: blur(8px);
+        }
+        #image-overlay img { 
+            width: 100%; height: 100%; 
+            object-fit: contain; /* 確保全屏顯示且不拉深變形 */
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+<div id="image-overlay" onclick="closeExample()">
+    <img src="example-zh.jpg" alt="Example" id="overlay-img">
+</div>
+
+<header class="bg-white border-b-4 border-pink-100 px-4 shadow-sm shrink-0 z-10 pt-[calc(env(safe-area-inset-top,0px)+12px)] pb-3">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+        <div>
+            <h1 id="lang-title" class="text-xl font-black text-sweet-pink-dark flex items-center gap-2">
+                <span class="material-symbols-rounded fill-1">calculate</span>邊件抵買啲？
+            </h1>
+            <p id="lang-sub" class="text-sm font-black text-slate-400 tracking-wide">超巿格價計算機</p>
+        </div>
+        <button id="lang-btn" onclick="toggleLang()" class="bg-blue-500 text-white px-3 py-1 rounded-xl text-xs font-black shadow-md flex items-center gap-1 active:scale-95 transition-transform">
+            <span class="material-symbols-rounded text-xs">translate</span>EN
+        </button>
+    </div>
+</header>
+
+<main id="scroll-area">
+    <div id="item-list" class="max-w-md mx-auto space-y-3 pb-20"></div>
+</main>
+
+<footer>
+    <div class="max-w-md mx-auto space-y-4">
+        <div id="guide-zone" class="text-center mb-1">
+            <div id="helper-bubble" class="helper-bubble">請輸入第一件商品</div>
+        </div>
+
+        <div id="main-capsule" class="capsule-container">
+            <div class="capsule-section">
+                <span id="lbl-price" class="floating-label">價錢 ($)</span>
+                <input type="number" id="input-p" placeholder="0" class="clean-input" inputmode="decimal">
+            </div>
+            <div class="text-pink-100 font-light text-2xl px-1">|</div>
+            <div class="capsule-section">
+                <span id="lbl-qty" class="floating-label">數量/重量</span>
+                <input type="number" id="input-q" placeholder="0" class="clean-input" inputmode="numeric">
+            </div>
+            <div class="capsule-section !flex-[0.8] ml-1">
+                <span id="lbl-unit" class="floating-label">單位</span>
+                <select id="input-u" class="clean-input !text-base !text-sweet-pink-dark appearance-none cursor-pointer"></select>
+            </div>
+        </div>
+        <div id="btn-container" class="flex gap-3"></div>
+        <div id="clear-container"></div>
+    </div>
+</footer>
+
+<script>
+    let items = [];
+    let currentLang = 'zh';
+
+    const translations = {
+        zh: { 
+            title: "邊件抵買啲？", sub: "超巿格價計算機", add: "加一件", compare: "立即格價", clear: "清除內容", 
+            winning: "最抵買！", per: "每", itemLabel: "商品",
+            exampleImg: "example-zh.jpg",
+            introDesc: "大包裝更抵？未必！<br/><span class='text-slate-500 text-lg'>輸入價錢數量，真假優惠一撳即知。</span><br/><div onclick='openExample()' class='example-link'><span class='material-symbols-rounded text-sm'>image</span>查看例子</div>",
+            guide1: "請輸入第一件商品", guide2: "再輸入第二件商品作比較",
+            price: "價錢 ($)", qty: "數量/重量", unit: "單位", langBtn: "EN",
+            units: [
+                { val: 1, type: "piece", text: "個 pcs" },
+                { val: 1, type: "weight", text: "克 g" }, { val: 1000, type: "weight", text: "公斤 kg" },
+                { val: 1, type: "liquid", text: "毫升 ml" }, { val: 1000, type: "liquid", text: "升 L" }
+            ]
+        },
+        en: { 
+            title: "Which is Cheaper?", sub: "Price Calculator", add: "Add Item", compare: "Compare!", clear: "Clear All", 
+            winning: "Winner!", per: "per", itemLabel: "Item",
+            exampleImg: "example-en.jpg",
+            introDesc: "Bulk buy = Savings? Not always!<br/><span class='text-slate-500 text-lg'>Compare unit prices in one tap.</span><br/><div onclick='openExample()' class='example-link'><span class='material-symbols-rounded text-sm'>image</span>View Example</div>",
+            guide1: "Enter 1st item price", guide2: "Great! Add one more",
+            price: "Price ($)", qty: "Qty/Weight", unit: "Unit", langBtn: "中",
+            units: [
+                { val: 1, type: "piece", text: "pcs" },
+                { val: 1, type: "weight", text: "g" }, { val: 1000, type: "weight", text: "kg" },
+                { val: 1, type: "liquid", text: "ml" }, { val: 1000, type: "liquid", text: "L" }
+            ]
+        }
+    };
+
+    function openExample() {
+        const overlay = document.getElementById('image-overlay');
+        const img = document.getElementById('overlay-img');
+        img.src = translations[currentLang].exampleImg; // 根據當前語言載入對應圖片
+        overlay.style.display = 'flex';
+    }
+    
+    function closeExample() {
+        document.getElementById('image-overlay').style.display = 'none';
+    }
+
+    function setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+            let date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+    }
+
+    function getCookie(name) {
+        let nameEQ = name + "=";
+        let ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    function updateUnitSelect() {
+        const uSel = document.getElementById('input-u');
+        const t = translations[currentLang];
+        const lockedType = items.length > 0 ? items[0].type : null;
+        const availableUnits = lockedType ? t.units.filter(u => u.type === lockedType) : t.units;
+        uSel.innerHTML = availableUnits.map(u => `<option value="${u.val}" data-type="${u.type}">${u.text}</option>`).join('');
+    }
+
+    function applyLangUI() {
+        const t = translations[currentLang];
+        document.getElementById('lang-title').innerHTML = `<span class="material-symbols-rounded">calculate</span>` + t.title;
+        document.getElementById('lang-sub').innerText = t.sub;
+        document.getElementById('lang-btn').innerHTML = `<span class="material-symbols-rounded text-xs">translate</span>` + t.langBtn;
+        document.getElementById('lbl-price').innerText = t.price;
+        document.getElementById('lbl-qty').innerText = t.qty;
+        document.getElementById('lbl-unit').innerText = t.unit;
+        updateUnitSelect();
+        renderList();
+    }
+
+    function toggleLang() {
+        currentLang = currentLang === 'zh' ? 'en' : 'zh';
+        setCookie('app_lang', currentLang, 365);
+        applyLangUI();
+    }
+
+    function addNewItem() {
+        const pInput = document.getElementById('input-p');
+        const qInput = document.getElementById('input-q');
+        const uSel = document.getElementById('input-u');
+        const p = parseFloat(pInput.value);
+        const q = parseFloat(qInput.value);
+        if (isNaN(p) || isNaN(q) || p <= 0 || q <= 0) return;
+        const u = parseFloat(uSel.value);
+        const type = uSel.options[uSel.selectedIndex].getAttribute('data-type');
+        const unitLabel = uSel.options[uSel.selectedIndex].text;
+        const isPiece = (type === 'piece');
+        const multiplier = isPiece ? 1 : 100;
+        const finalPrice = (p / (q * u)) * multiplier;
+        items.push({ p, q, unitLabel, type, finalPrice, id: Date.now(), pureUnit: unitLabel.split(' ').pop(), isPiece });
+        pInput.value = ''; qInput.value = '';
+        updateUnitSelect();
+        if (items.length === 2) { compareAll(); } else { renderList(); }
+        const scrollArea = document.getElementById('scroll-area');
+        setTimeout(() => { scrollArea.scrollTop = scrollArea.scrollHeight; }, 50);
+    }
+
+    function renderList(winnerIds = []) {
+        const listContainer = document.getElementById('item-list');
+        const btnContainer = document.getElementById('btn-container');
+        const clearContainer = document.getElementById('clear-container');
+        const helper = document.getElementById('helper-bubble');
+        const guideZone = document.getElementById('guide-zone');
+        const mainCapsule = document.getElementById('main-capsule');
+        const t = translations[currentLang];
+
+        if (items.length === 0) {
+            guideZone.classList.remove('hide');
+            mainCapsule.classList.add('guide-highlight');
+            helper.innerText = t.guide1;
+            listContainer.innerHTML = `<div class="intro-mode flex items-center justify-center min-h-[40vh] px-6 text-center"><div><p class="text-slate-800 text-2xl font-black leading-snug">${t.introDesc}</p></div></div>`;
+        } else if (items.length === 1) {
+            guideZone.classList.remove('hide');
+            mainCapsule.classList.remove('guide-highlight');
+            helper.innerText = t.guide2;
+        } else {
+            guideZone.classList.add('hide');
+            mainCapsule.classList.remove('guide-highlight');
+        }
+
+        if (items.length > 0) {
+            listContainer.innerHTML = '';
+            items.forEach((item, index) => {
+                const isWinner = winnerIds.includes(item.id);
+                let baseVal = item.isPiece ? "1" : "100";
+                let displayUnit = item.isPiece ? item.pureUnit : (item.type === 'weight' ? 'g' : 'ml');
+                const suffix = `${t.per} ${baseVal}${displayUnit}`;
+                listContainer.insertAdjacentHTML('beforeend', `
+                    <div id="card-${item.id}" class="flex items-center justify-between bg-white p-4 rounded-3xl border-4 ${isWinner ? 'winner-glow' : 'border-pink-50'} shadow-sm transition-all">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-slate-800 text-white w-8 h-8 flex items-center justify-center rounded-xl font-black text-sm shrink-0 shadow-sm">${index + 1}</div>
+                            <div><p class="text-lg font-black text-slate-700">$${item.p} <span class="text-xs font-bold text-slate-400">/ ${item.q}${item.pureUnit}</span></p></div>
+                        </div>
+                        <div class="text-right">
+                            ${isWinner ? `<p class="text-[10px] font-black text-sweet-pink-dark">🎉 ${t.winning}</p>` : ''}
+                            <p class="text-2xl font-black ${isWinner ? 'text-sweet-pink-dark' : 'text-slate-700'}">$${item.finalPrice.toFixed(2)}</p>
+                            <p class="text-[10px] font-bold text-slate-500">${suffix}</p>
+                        </div>
+                    </div>`);
+            });
+        }
+
+        btnContainer.innerHTML = `<button onclick="addNewItem()" class="flex-1 h-14 rounded-[24px] bg-slate-800 text-white font-black text-base flex items-center justify-center gap-1 active:bg-slate-700 transition-all shadow-lg floating-btn"><span>${t.add}</span></button>`;
+        if (items.length >= 2) {
+            btnContainer.innerHTML += `<button onclick="compareAll()" class="flex-[1.5] h-14 rounded-[24px] bg-sweet-pink-dark text-white font-black text-xl shadow-lg shadow-pink-200 active:translate-y-1 transition-all flex items-center justify-center gap-2 floating-btn"><span>${t.compare}</span></button>`;
+        }
+        clearContainer.innerHTML = items.length >= 1 ? `<button onclick="clearAll()" class="w-full h-12 mt-2 bg-slate-500 text-white rounded-xl font-black text-base uppercase tracking-widest active:bg-slate-600 transition-all">${t.clear}</button>` : '';
+    }
+
+    function compareAll(shouldScroll = false) {
+        if (items.length < 2) return;
+        const minPrice = Math.min(...items.map(i => i.finalPrice));
+        const winnerIds = items.filter(i => Math.abs(i.finalPrice - minPrice) < 0.001).map(i => i.id);
+        renderList(winnerIds);
+        if (shouldScroll) {
+            setTimeout(() => {
+                const firstWinner = document.getElementById(`card-${winnerIds[0]}`);
+                if (firstWinner) firstWinner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+    }
+
+    function clearAll() { 
+        const msg = currentLang === 'zh' ? '確定要清除所有紀錄嗎？' : 'Are you sure you want to clear all items?';
+        if (confirm(msg)) { items = []; updateUnitSelect(); renderList(); }
+    }
+
+    function init() {
+        const savedLang = getCookie('app_lang');
+        if (savedLang && translations[savedLang]) currentLang = savedLang;
+        applyLangUI();
+    }
+    init();
+</script>
+</body>
+</html>
