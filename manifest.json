@@ -1,6 +1,6 @@
 {
   "name": "邊件抵買啲？- 超巿格價計算機",
-  "short_name": "格價計",
+  "short_name": "超巿格價計算機",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#fffaf0",
@@ -17,4 +17,5 @@
       "type": "image/png"
     }
   ]
+
 }
