@@ -1,0 +1,12 @@
+{
+  "name": "Which is Cheaper? - Price Calculator",
+  "short_name": "Price Calculator",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#fffaf0",
+  "theme_color": "#ff4d6d",
+  "icons": [
+    { "src": "smartcalc.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "smartcalc.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
