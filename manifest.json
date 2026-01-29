@@ -1,0 +1,20 @@
+{
+  "name": "邊件抵買啲？- 超巿格價計算機",
+  "short_name": "格價計",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#fffaf0",
+  "theme_color": "#ff4d6d",
+  "icons": [
+    {
+      "src": "smartcalc.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "smartcalc.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
