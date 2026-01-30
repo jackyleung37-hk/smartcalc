@@ -256,7 +256,7 @@
             per: "每", 
             itemLabel: "商品",
             exampleImg: "example-zh.jpg",
-            introDesc: `平時去百佳惠康或淘寶，<br/>見到商品唔同價錢，<br/>唔知邊樣抵啲？<br/><br/>入咗<span class="text-red-500">價錢</span>同<span class="text-red-500">數量/重量</span>，<br/>我即刻話比你知！<br/><div onclick='openExample()' class='example-link'><span class='material-symbols-rounded text-sm'>image</span>查看例子</div>`,
+            introDesc: `平時去百佳惠康或淘寶，<br/>見到商品唔同價錢，<br/>唔知邊樣抵啲？<br/><br/>輸入<span class="text-red-500">價錢</span>同<span class="text-red-500">數量/重量</span>，<br/>我即刻話比你知！<br/><div onclick='openExample()' class='example-link'><span class="material-symbols-rounded text-sm">ads_click</span>睇睇點用</div>`,
             guide1: "請輸入第一件商品", guide2: "再輸入第二件商品作比較",
             price: "價錢 ($)", qty: "數量/重量", unit: "單位", langBtn: "EN",
             faqTitle: "常見問題",
@@ -283,7 +283,7 @@ faqs: [
             per: "per", 
             itemLabel: "Item",
             exampleImg: "example-en.jpg",
-            introDesc: `Found similar items with different prices and sizes, and not sure which is a better deal?<br/><br/>Just enter the <span class="text-red-500">price</span> and <span class="text-red-500">quantity</span>, and I'll tell you the winner!<br/><div onclick='openExample()' class='example-link'><span class='material-symbols-rounded text-sm'>image</span>View Example</div>`,
+introDesc: `Confused about which deal is better?<br/><br/>Just enter the <span class="text-red-500">price</span> + <span class="text-red-500">qty/weight</span> — Let me tell you the winner!<br/><div onclick='openExample()' class='example-link'><span class='material-symbols-rounded text-sm'>ads_click</span>See how it works</div>`,
             guide1: "Enter 1st item price", guide2: "Great! Add one more",
             price: "Price ($)", qty: "Qty/Weight", unit: "Unit", langBtn: "中",
             faqTitle: "FAQ",
@@ -429,6 +429,7 @@ faqs: [
             guideZone.classList.remove('hide');
             mainCapsule.classList.add('guide-highlight');
             helper.innerText = t.guide1;
+const fontSizeClass = currentLang === 'en' ? 'text-xl' : 'text-2xl';
             listContainer.innerHTML = `<div class="intro-mode flex items-center justify-center min-h-[40vh] px-6 text-center"><div><p class="text-slate-800 text-2xl font-black leading-snug">${t.introDesc}</p></div></div>`;
         } else if (items.length === 1) {
             guideZone.classList.remove('hide');
